@@ -1,0 +1,165 @@
+#SQL Retail sales Project
+create database Retail_sales_project;
+use Retail_sales_project;
+
+#Create Table
+drop table if exists retail_sales;
+create table retail_sales
+(
+transactions_id int primary key,
+sale_date date,
+sale_time time,
+customer_id int,
+gender varchar(50),
+age int,
+category varchar(25),
+quantity int,
+price_per_unit float,
+cogs float,
+total_sale float
+);
+#data Cleaning
+select *from retail_sales
+limit 10;
+
+SELECT 
+    COUNT(*)
+FROM
+    retail_sales
+    
+SELECT 
+    *
+FROM
+    retail_sales
+WHERE
+    transactions_id IS NULL;
+
+SELECT 
+    *
+FROM
+    retail_sales
+WHERE
+    sale_date IS NULL;
+    
+    SELECT 
+    *
+FROM
+    retail_sales
+WHERE
+    sale_time IS NULL;
+    
+SELECT 
+    *
+FROM
+    retail_sales
+WHERE
+    transactions_id IS NULL
+        OR sale_date IS NULL
+        OR sale_time IS NULL
+        OR gender IS NULL
+        OR category IS NULL
+        OR quantity IS NULL
+        OR cogs IS NULL
+        OR total_sale IS NULL;
+        
+#Data Explorations
+
+#how many sales we have
+
+SELECT 
+    COUNT(*) AS total_sales
+FROM
+    retail_sales
+
+#how many unique customers we have 
+
+SELECT 
+    COUNT(DISTINCT customer_id) AS total_customers
+FROM
+    retail_sales
+
+SELECT DISTINCT
+    category
+FROM
+    retail_sales
+
+
+#Data Analysis & Bussiness key problems and Answers
+
+# write a Sql query to Retreive all columns for sales mode on '2022-11-05
+
+SELECT * FROM retail_sales
+WHERE `sale_date` = '2022-11-05';
+
+#write a SQL query to retreive all transactions where all the category is clothing and quantity sold than 10 in the 
+#month ofnov 2022
+
+  SELECT *
+FROM retail_sales
+WHERE category = 'clothing'
+  AND TO_CHAR(sale_date, 'YYYY-MM') = '2022-11'
+  AND quantity >= 4;
+  
+  
+  # write a sql query to calculate the total sales (total_sale) for each category
+  
+  select 
+  category,
+  sum(total_sale) as net_sales,
+  count(*) as total_orders
+  from retail_sales
+  group by 1;
+  
+  #write a sql query to find all transactions where the total_sales is greater than 1000
+  
+  select *from retail_sales
+  where total_sale >1000;
+
+  #write a SQL Query to find the average age of customer who purchased item from from the beauty category
+
+SELECT 
+    round(Avg(age),2) as avg_sale
+FROM
+    retail_sales
+WHERE
+    category = 'Beauty';
+    
+#write a sql query to find the total numbers of transactions made by each gender in each category
+
+SELECT 
+    category, gender, COUNT(*) AS total_trans
+FROM
+    retail_sales
+GROUP BY category , gender
+order by 1
+
+
+#write a SQL Query to calculate the average sale for each month , find out best selling month in each year
+SELECT 
+    EXTRACT(YEAR FROM sale_date) AS year,
+    extract(month from sale_date) as month,
+    avg(total_sale) as total_sale
+    rank()over(partition by extract(year from sale_date) order by avg(total_sale) desc) as rank
+FROM
+    retail_sales
+    group by year , month
+    order by year , month desc
+    
+#write a SQL query to find the top 5 customers based on the highest total sales
+
+SELECT
+  customer_id,
+  SUM(total_sale) AS total_sales
+FROM retail_sales
+GROUP BY customer_id
+ORDER BY total_sales DESC
+LIMIT 5;
+
+#write a SQL query to find the number of unique customer who purchased item from each category
+
+SELECT 
+    category, COUNT(DISTINCT customer_id) as distinct_customer
+FROM
+    retail_sales
+GROUP BY category
+
